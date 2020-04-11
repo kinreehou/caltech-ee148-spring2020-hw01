@@ -2,6 +2,28 @@ import os
 import numpy as np
 import json
 from PIL import Image
+from scipy import ndimage
+
+def template(path='template.jpg'):
+    data_path = path
+    I = Image.open(data_path)
+    I = np.asarray(I)
+    red = np.array([[I[i,j,0]*2/255.0-1 for j in range(I.shape[1])]for i in range(I.shape[0])])
+    green = np.array([[I[i,j,1]*2/255.0-1 for j in range(I.shape[1])]for i in range(I.shape[0])])
+    blue = np.array([[I[i,j,2]*2/255.0-1 for j in range(I.shape[1])]for i in range(I.shape[0])])
+    
+    return red, green, blue
+    
+def box(matrix):
+    labeled_image, num_features = ndimage.label(matrix)
+    # Find the location of all objects
+    objs = ndimage.find_objects(labeled_image)
+
+    boxes = []
+    for ob in objs:
+        boxes.append([int(ob[0].start), int(ob[0].stop), int(ob[1].start), int(ob[1].stop)])
+        
+    return(boxes)
 
 def detect_red_light(I):
     '''
@@ -24,27 +46,27 @@ def detect_red_light(I):
     '''
     BEGIN YOUR CODE
     '''
-    
-    '''
-    As an example, here's code that generates between 1 and 5 random boxes
-    of fixed size and returns the results in the proper format.
-    '''
-    
-    box_height = 8
-    box_width = 6
-    
-    num_boxes = np.random.randint(1,5) 
-    
-    for i in range(num_boxes):
-        (n_rows,n_cols,n_channels) = np.shape(I)
+    temp_all_channel = template(path='template.jpg')
+    temp_red = temp_all_channel[0]  #use red channel
+    ground_truth = np.sum(temp_red*temp_red)
+    h = temp_red.shape[0]
+    w = temp_red.shape[1]
+    red_ch = I[:,:,0]
+    conv_res = [[0]*(red_ch.shape[1]-w) for _ in range(I.shape[0]-h)]
+    for i in range(red_ch.shape[0]-h):
+        for j in range(red_ch.shape[1]-w):
+            test_area = red_ch[i:i+h, j:j+w]
+            #print(test_area)
+            conv_res[i][j]=abs(np.sum(temp_red*test_area)-ground_truth) 
+            #print(np.sum(temp_red*test_area))
+            
+    conv_res = conv_res/np.max(conv_res)
+    conv_res = np.where(conv_res<0.01,1,0)  
+    #ax = sns.heatmap(np.array(conv_res))
+    #ax = sns.heatmap(np.array(red_ch))
+    #plt.show()
         
-        tl_row = np.random.randint(n_rows - box_height)
-        tl_col = np.random.randint(n_cols - box_width)
-        br_row = tl_row + box_height
-        br_col = tl_col + box_width
-        
-        bounding_boxes.append([tl_row,tl_col,br_row,br_col]) 
-    
+    bounding_boxes = box(conv_res)
     '''
     END YOUR CODE
     '''
@@ -55,7 +77,7 @@ def detect_red_light(I):
     return bounding_boxes
 
 # set the path to the downloaded data: 
-data_path = '../data/RedLights2011_Medium'
+data_path = '../RedLights2011_Medium'
 
 # set a path for saving predictions: 
 preds_path = '../data/hw01_preds' 
@@ -68,8 +90,11 @@ file_names = sorted(os.listdir(data_path))
 file_names = [f for f in file_names if '.jpg' in f] 
 
 preds = {}
+pass_idx = [12,15,19]
 for i in range(len(file_names)):
-    
+    if i in pass_idx:
+        continue
+        
     # read image using PIL:
     I = Image.open(os.path.join(data_path,file_names[i]))
     
@@ -77,6 +102,7 @@ for i in range(len(file_names)):
     I = np.asarray(I)
     
     preds[file_names[i]] = detect_red_light(I)
+    print(file_names[i],'done')
 
 # save preds (overwrites any previous predictions!)
 with open(os.path.join(preds_path,'preds.json'),'w') as f:
