@@ -6,13 +6,13 @@
 
 # 1
 
-### 1.
+### 1
 
 I tried matched filter in the red channel and analyzing the relationships of the RGB values of the candidate areas.
 
 
 
-### 2.
+### 2
 
 I drew the predicted bounding boxes onto the original picture and evaluate the results by my eyes. 
 
