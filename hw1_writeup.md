@@ -28,7 +28,7 @@ Matched filter in the red channel performs the best. (But the result is still no
 
 ### 4 
 
-<img src="/Users/kinreehou/Documents/EE148/hw1/caltech-ee148-spring2020-hw01/red_channel_conv_res.png" alt="red_channel_conv_res" style="zoom:33%;" />
+<img src="red_channel_conv_res.png" alt="red_channel_conv_res" style="zoom:10%;" />
 
 Because all the red lights here are similar to the template with respect of lighting conditions snd sizes.
 
@@ -36,7 +36,7 @@ Because all the red lights here are similar to the template with respect of ligh
 
 ### 5
 
-<img src="red_channel_failure.png" alt="red_channel_failure" style="zoom:33%;" />
+<img src="red_channel_failure.png" alt="red_channel_failure" style="zoom:10%;" />
 
 In some areas, even though the color is not red, but the RGB value in the Red channel may be similar to a red light, so we may get a similar value to the template of red light after convolution. Also, I just set the threshold by experience, which can be a problem.
 
@@ -46,7 +46,7 @@ In some areas, even though the color is not red, but the RGB value in the Red ch
 
 When choosing the template of a red light, I just cropped the red light from a picture. So the template may itself be biased. 
 
-<img src="/Users/kinreehou/Documents/EE148/hw1/caltech-ee148-spring2020-hw01/template.jpg" alt="template" style="zoom:200%;" />
+<img src="template.jpg" alt="template" style="zoom:200%;" />
 
 Possible solution: analyze multiple red light pictures and try to generate a template suitable for various lighting conditions.
 
