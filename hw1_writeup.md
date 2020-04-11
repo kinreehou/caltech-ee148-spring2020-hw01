@@ -36,7 +36,7 @@ Because all the red lights here are similar to the template with respect of ligh
 
 ### 5
 
-<img src="/Users/kinreehou/Documents/EE148/hw1/caltech-ee148-spring2020-hw01/red_channel_failure.png" alt="red_channel_failure" style="zoom:33%;" />
+<img src="red_channel_failure.png" alt="red_channel_failure" style="zoom:33%;" />
 
 In some areas, even though the color is not red, but the RGB value in the Red channel may be similar to a red light, so we may get a similar value to the template of red light after convolution. Also, I just set the threshold by experience, which can be a problem.
 
